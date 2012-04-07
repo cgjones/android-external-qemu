@@ -29,6 +29,7 @@
 #include "qemu-char.h"
 #include <stdio.h>
 #include <string.h>
+#include <sys/time.h>
 
 #define  D(...)  VERBOSE_PRINT(hw_control,__VA_ARGS__)
 
@@ -95,11 +96,13 @@ if_starts_with( uint8_t*  buf, int buflen, const char*  prefix )
 
 static void hw_control_process_msg(uint8_t* query, int querylen)
 {
+    struct timeval tv;
 
     if(hw_control_fp == NULL)
         return;
 
-    fprintf(hw_control_fp, "%s\n", query);
+    gettimeofday(&tv, 0);
+    fprintf(hw_control_fp, "%ld.%ld %s\n", tv.tv_sec, tv.tv_usec / 1000, query);
     fflush(hw_control_fp);
     
     return;
